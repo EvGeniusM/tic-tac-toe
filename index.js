@@ -91,8 +91,7 @@ function cellClickHandler (row, col) {
         }
         move++;
         if (move === 9) {
-
-            alert('гойда!');
+            alert('ничья!');
         }
     }
     console.log(`Clicked on cell: ${row}, ${col}`);
