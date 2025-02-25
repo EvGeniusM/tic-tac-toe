@@ -7,6 +7,7 @@ const container = document.getElementById('fieldWrapper');
 let move = 0;
 let crosses = [];
 let zeros = [];
+let gameOver = false;
 
 let winCombs = [
     [0, 1, 2],
@@ -47,7 +48,7 @@ function convertToCellNumber (row, column) {
 
 function convertToCoordinates (numb) {
     let col = numb % 3;
-    let row = numb - col * 3;
+    let row = Math.floor(numb / 3);
     return [row, col];
 }
 
@@ -55,23 +56,25 @@ function isSubArray(arr1, arr2) {
     return arr2.every(element => arr1.includes(element));
 }
 
-function colorizeComb (comb, winner) {
+function colorizeComb (comb) {
     for (const numb of comb) {
         let coord = convertToCoordinates(numb);
         let row = coord[0];
         let col = coord[1];
-
+        findCell(row, col).style.color = '#900';
     }
 }
 
 function cellClickHandler (row, col) {
     let numb = convertToCellNumber(row, col);
-    if (findCell(row, col).textContent === EMPTY) {
+    if (findCell(row, col).textContent === EMPTY && !gameOver) {
         if (move % 2 === 0) {
             renderSymbolInCell(CROSS, row, col);
             crosses.push(numb);
             for (const comb of winCombs) {
                 if (isSubArray(crosses, comb)) {
+                    colorizeComb(comb);
+                    gameOver = true;
                     setTimeout(() => { alert('Крестики победили!') }, 250);
                 }
             }
@@ -80,6 +83,8 @@ function cellClickHandler (row, col) {
             zeros.push(numb);
             for (const comb of winCombs) {
                 if (isSubArray(zeros, comb)) {
+                    colorizeComb(comb);
+                    gameOver = true;
                     setTimeout(() => { alert('Нолики победили!') }, 250);
                 }
             }
@@ -91,6 +96,20 @@ function cellClickHandler (row, col) {
         }
     }
     console.log(`Clicked on cell: ${row}, ${col}`);
+}
+
+function resetClickHandler () {
+    move = 0;
+    crosses = [];
+    zeros = [];
+    gameOver = false;
+
+    for (let i = 0; i < 3; i++){
+        for (let j = 0; j < 3; j++){
+            renderSymbolInCell(EMPTY, i, j);
+        }
+    }
+    console.log('reset!');
 }
 
 function renderSymbolInCell (symbol, row, col, color = '#333') {
@@ -109,11 +128,6 @@ function addResetListener () {
     const resetButton = document.getElementById('reset');
     resetButton.addEventListener('click', resetClickHandler);
 }
-
-function resetClickHandler () {
-    console.log('reset!');
-}
-
 
 /* Test Function */
 /* Победа первого игрока */
