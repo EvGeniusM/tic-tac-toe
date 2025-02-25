@@ -4,6 +4,21 @@ const EMPTY = ' ';
 
 const container = document.getElementById('fieldWrapper');
 
+let move = 0;
+let crosses = [];
+let zeros = [];
+
+let winCombs = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6]
+]
+
 startGame();
 addResetListener();
 
@@ -26,14 +41,56 @@ function renderGrid (dimension) {
     }
 }
 
+function convertToCellNumber (row, column) {
+    return column + row * 3;
+}
+
+function convertToCoordinates (numb) {
+    let col = numb % 3;
+    let row = numb - col * 3;
+    return [row, col];
+}
+
+function isSubArray(arr1, arr2) {
+    return arr2.every(element => arr1.includes(element));
+}
+
+function colorizeComb (comb, winner) {
+    for (const numb of comb) {
+        let coord = convertToCoordinates(numb);
+        let row = coord[0];
+        let col = coord[1];
+
+    }
+}
+
 function cellClickHandler (row, col) {
-    // Пиши код тут
+    let numb = convertToCellNumber(row, col);
+    if (findCell(row, col).textContent === EMPTY) {
+        if (move % 2 === 0) {
+            renderSymbolInCell(CROSS, row, col);
+            crosses.push(numb);
+            for (const comb of winCombs) {
+                if (isSubArray(crosses, comb)) {
+                    setTimeout(() => { alert('Крестики победили!') }, 250);
+                }
+            }
+        } else {
+            renderSymbolInCell(ZERO, row, col);
+            zeros.push(numb);
+            for (const comb of winCombs) {
+                if (isSubArray(zeros, comb)) {
+                    setTimeout(() => { alert('Нолики победили!') }, 250);
+                }
+            }
+        }
+        move++;
+        if (move === 9) {
+
+            alert('гойда!');
+        }
+    }
     console.log(`Clicked on cell: ${row}, ${col}`);
-
-
-    /* Пользоваться методом для размещения символа в клетке так:
-        renderSymbolInCell(ZERO, row, col);
-     */
 }
 
 function renderSymbolInCell (symbol, row, col, color = '#333') {
